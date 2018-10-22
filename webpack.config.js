@@ -1,14 +1,20 @@
+// Bundle used for PHP + WebPack
+// To use for static HTML Delete whole BrowserSyncPlugin plugin and whole devServer option
+
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const autoprefixer = require('autoprefixer');
+const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
+
+const apacheServerAddress = 'http://127.0.0.7:80';
 
 module.exports = {
     mode: 'development',
     devtool: 'source-map',
     entry: "./src/js/app.js",
     output: {
-        publicPath: "/dist/",
+        publicPath: apacheServerAddress,
         path: __dirname + "/dist",
         filename: "js/app.js"
     },
@@ -31,8 +37,35 @@ module.exports = {
     plugins: [
         new MiniCssExtractPlugin({
           filename:"css/styles.css"
+        }),
+        new BrowserSyncPlugin({
+            proxy: 'http://localhost:8080',
+            files: [
+                {
+                    match: [
+                        '**/*.php'
+                    ],
+                    fn: function(event, file) {
+                        if (event === "change") {
+                            const bs = require('browser-sync').get('bs-webpack-plugin');
+                            bs.reload();
+                        }
+                    }
+                }
+            ]
+        }, {
+            reload: false
         })
     ],
+    devServer: {
+        proxy: {
+            '/': {
+                target: apacheServerAddress,
+                changeOrigin: true,
+                secure: false
+            }
+        }
+    },
     module: {
         rules: [
             {

@@ -8,8 +8,7 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>rtyryrty</h1>
-    <a href="documents.html">Docs</a>
+    <h1>Test</h1>
     <script src="js/app.js"></script>
 </body>
 </html>
